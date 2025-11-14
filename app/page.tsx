@@ -9,7 +9,7 @@ export default function Home() {
   const [concept, setConcept] = useState("");
   //message or result returned from the backend (success/error)
   const [output, setOutput] = useState("");
-   //loading state to disable the button and show “Creating...” while waiting
+  //loading state to disable the button and show “Creating...” while waiting
   const [loading, setLoading] = useState(false);
 
   //check if the user is logged in
@@ -39,50 +39,70 @@ export default function Home() {
     });
     const data = await res.json();
     setLoading(false);
-     //display success or error message
+    //display success or error message
     setOutput(
       data.ok
         ? `Playlist created! Open in Spotify: ${data.playlist}`
         : `Error: ${data.error}`
     );
   }
- //render the UI
+
+  //render the UI
   return (
-    <main className="max-w-2xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <span>Hello, {user.username}</span>
-        {!user.spotifyLinked ? (
-          <button
-            onClick={connectSpotify}
-            className="bg-green-600 text-white px-3 py-2 rounded"
-          >
-            Connect Spotify
-          </button>
-        ) : (
-          <span className="text-green-700 text-sm">Spotify Connected</span>
+    // Main container: Light blue bg, dark blue text, centered
+    <main className="flex flex-col items-center justify-center min-h-screen bg-blue-100 font-sans text-blue-900 p-4">
+      {/* Title */}
+      <h1 className="text-5xl md:text-6xl font-extrabold text-center mb-8 text-blue-950 font-sans">
+        Musicanator
+      </h1>
+
+      {/* Main content card */}
+      <div className="w-full max-w-2xl bg-white dark:bg-blue-200 rounded-2xl shadow-2xl p-6 md:p-8">
+        {/* Header: "Hello, user" + Spotify Button */}
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
+          <span className="text-lg font-semibold text-blue-900 mb-4 sm:mb-0">
+            Hello, {user.username}
+          </span>
+          {!user.spotifyLinked ? (
+            <button
+              onClick={connectSpotify}
+              // Keeping the green button as requested!
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition duration-200"
+            >
+              Connect Spotify
+            </button>
+          ) : (
+            <span className="text-green-700 font-semibold">
+              Spotify Connected
+            </span>
+          )}
+        </div>
+
+        {/* Textbox: Rounded and styled */}
+        <textarea
+          className="w-full border border-blue-300 bg-blue-50 text-blue-900 placeholder-blue-700/60 p-3 h-32 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+          placeholder="Describe your playlist idea..."
+          value={concept}
+          onChange={(e) => setConcept(e.target.value)}
+        />
+
+        {/* Create Playlist Button: Styled to match theme */}
+        <button
+          onClick={createPlaylist}
+          disabled={loading || !user.spotifyLinked}
+          className="mt-4 bg-blue-700 hover:bg-blue-800 text-white w-full p-3 rounded-lg font-semibold transition duration-200 disabled:opacity-50"
+        >
+          {loading ? "Creating..." : "Create Playlist"}
+        </button>
+
+        {/* Output box: Styled to match theme */}
+        {output && (
+          <pre className="mt-4 p-4 border border-blue-300 rounded-lg bg-blue-50 whitespace-pre-wrap text-blue-900">
+            {output}
+          </pre>
         )}
       </div>
-
-      <textarea
-        className="w-full border p-3 h-32"
-        placeholder="Describe your playlist idea..."
-        value={concept}
-        onChange={(e) => setConcept(e.target.value)}
-      />
-
-      <button
-        onClick={createPlaylist}
-        disabled={loading || !user.spotifyLinked}
-        className="mt-3 bg-black text-white px-4 py-2 rounded disabled:opacity-50"
-      >
-        {loading ? "Creating..." : "Create Playlist"}
-      </button>
-
-      {output && (
-        <pre className="mt-4 p-3 border rounded bg-gray-50 whitespace-pre-wrap">
-          {output}
-        </pre>
-      )}
     </main>
   );
 }
+
