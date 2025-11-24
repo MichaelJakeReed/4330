@@ -19,6 +19,7 @@ export function authUrl(challenge: string, state: string) {
   const scope = [
     "playlist-modify-private",
     "playlist-modify-public",
+    "playlist-read-private",
     "user-read-private"
   ].join(" ");
 
@@ -81,11 +82,47 @@ export async function searchTracks(token: string, query: string) {
   return data.tracks?.items?.[0]?.uri;
 }
 
-export async function createPlaylist(token: string, userId: string, name: string) {
+// Counts how many existing playlists the user has that begin with "Musicanator Playlist"
+// This is used to number playlist creations sequentially
+export async function countMusicanatorPlaylists(token: string, prefix = "Musicanator Playlist"): Promise<number> {
+  let url: string | null = "https://api.spotify.com/v1/me/playlists?limit=50";
+  let count = 0;
+
+  while (url) {
+    // Fetches a page of the user's playlists
+    const res: Response = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Failed to fetch playlists (${res.status}): ${text}`);
+    }
+
+    // Spotify returns playlists + a "next" URL for pagination
+    const data: any = await res.json();
+
+    // Count playlists created
+    for (const pl of data.items ?? []) {
+      if (typeof pl.name === "string" && pl.name.startsWith(prefix)) {
+        count++;
+      }
+    }
+
+    // Move to next page if present
+    url = data.next ?? null;
+  }
+
+  return count;
+}
+
+// Creates a Spotify playlist
+// Used by Musicanator to store the user's prompt inside the playlist metadata/description
+export async function createPlaylist(token: string, userId: string, name: string, description: string) {
   const res = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ name, public: false }),
+    body: JSON.stringify({ name, description, public: false }),
   });
   return res.json();
 }

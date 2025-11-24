@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { withSpotifyToken, getMe, searchTracks, createPlaylist, addTracks } from "@/lib/spotify";
+import { withSpotifyToken, getMe, searchTracks, createPlaylist, addTracks, countMusicanatorPlaylists } from "@/lib/spotify";
 import { generateSongs } from "@/lib/gemini";
 
 //handles POST /api/playlist/create
@@ -23,8 +23,14 @@ export async function POST(req: Request) {
       }
       //if Gemini produced lines that didn't map to actual Spotify tracks throw fail
       if (!uris.length) throw new Error("No songs found");
+
+      // Count existing Musicanator playlists for this user
+      const existingCount = await countMusicanatorPlaylists(token);
+      // Name the new playlist with the next number
+      const playlistName = `Musicanator Playlist #${existingCount +1}`;
       //create a new playlist under the user's account
-      const playlist = await createPlaylist(token, me.id, `Musicanator playlist`);
+      const playlist = await createPlaylist(token, me.id, playlistName, concept);
+      
       //add all URIs to the playlist up to 100, we do 10(im broke and lazy)
       await addTracks(token, playlist.id, uris);
       //return the public URL so the frontend can show "Open in Spotify"
