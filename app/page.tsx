@@ -10,23 +10,27 @@ type PlaylistItem = {
 export default function Home() {
   const [user, setUser] = useState<any>(null);
   const [concept, setConcept] = useState("");
-  const [output, setOutput] = useState("");
+  const [playlistUrl, setPlaylistUrl] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<PlaylistItem[]>([]);
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  // On initial load: check authentication and fetch playlist history
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
       .then((userData) => {
         setUser(userData);
+        // If logged in, also fetch playlist history
         if (userData && userData.authenticated) {
            fetchHistory();
         }
       });
   }, []);
 
+  // Retrieves stored playlist history from the backend
   const fetchHistory = async () => {
     try {
       const res = await fetch("/api/playlist/history"); 
@@ -45,9 +49,11 @@ export default function Home() {
 
   const connectSpotify = () => (window.location.href = "/api/spotify/login");
 
+  // Creates a new playlist using the user's text prompt
   async function createPlaylist() {
     setLoading(true);
     try {
+      // Send concept/prompt to backend to generate playlist
       const res = await fetch("/api/playlist/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -56,7 +62,10 @@ export default function Home() {
       const data = await res.json();
       
       if (data.ok) {
-        setOutput(`Playlist created! Open in Spotify: ${data.playlist}`);
+        // Store the spotify playlist URL in order to render a button
+        setPlaylistUrl(data.playlist);
+        setError("");
+
         const newPlaylist: PlaylistItem = {
             id: Date.now().toString(),
             name: concept.substring(0, 20) + "...", 
@@ -67,10 +76,12 @@ export default function Home() {
         //Open the sidebar automatically when a new item is added
         setIsSidebarOpen(true); 
       } else {
-        setOutput(`Error: ${data.error}`);
+        setPlaylistUrl("");
+        setError(`Error: ${data.error}`);
       }
     } catch (err) {
-      setOutput("An error occurred.");
+      setPlaylistUrl("");
+      setError("An error occurred.");
     } finally {
       setLoading(false);
     }
@@ -176,10 +187,27 @@ export default function Home() {
             {loading ? "Creating..." : "Create Playlist"}
           </button>
 
-          {output && (
-            <pre className="mt-4 p-4 border border-blue-300 rounded-lg bg-blue-50 whitespace-pre-wrap text-blue-900">
-              {output}
-            </pre>
+          {error && (
+            <p className="mt-4 p-3 border border-red-300 rounded-lg bg-red-50 text-red-800">
+              {error}
+            </p>
+          )}
+
+          {/* Display success + button when a playlist is created */}
+          {playlistUrl && (
+            <div className="mt-4 flex flex-col gap-2">
+              <p className="text-blue-900 font-semibold">
+                Playlist created!
+              </p>
+              <a
+                href={playlistUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#1DB954] hover:bg-[#1ed760] text-white text-center py-2 px-4 rounded-lg font-semibold transition"
+              >
+                Open Playlist in Spotify
+              </a>
+        </div>
           )}
         </div>
       </main>
