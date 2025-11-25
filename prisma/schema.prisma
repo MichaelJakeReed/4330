@@ -1,0 +1,46 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+  
+model User {
+  id        String           @id @default(cuid())
+  username  String           @unique
+  passHash  String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  spotifyAccount SpotifyAccount?
+  playlists      PlaylistHistory[]
+}
+
+model SpotifyAccount {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model PlaylistHistory {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  concept           String
+  spotifyUrl        String
+  spotifyPlaylistId String?
+  createdAt         DateTime @default(now())
+}
+
+
+
+

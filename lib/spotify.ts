@@ -60,11 +60,13 @@ export async function exchangeCodeForTokens(code: string, verifier: string) {
 
 
 export async function withSpotifyToken<T>(fn: (token: string) => Promise<T>) {
-  const uid = await getSessionUserId();           // 👈 await
+  const uid = await getSessionUserId();
   if (!uid) throw new Error("Not logged in");
-  const user = getUser(uid)!;
-  if (!user.spotify) throw new Error("Spotify not connected");
+
+  const user = await getUser(uid);
+  if (!user || !user.spotify) throw new Error("Spotify not connected");
   if (Date.now() >= user.spotify.expiresAt) throw new Error("Spotify token expired — reconnect needed");
+
   return fn(user.spotify.accessToken);
 }
 
