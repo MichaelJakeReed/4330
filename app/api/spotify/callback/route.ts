@@ -38,7 +38,8 @@ export async function GET(req: Request) {
     if (!uid) return NextResponse.redirect(new URL("/login", BASE));
 
     //look up the user in our in-memory store.
-    const user = getUser(uid);
+    const user = await getUser(uid);
+
     if (!user) {
       // session cookie points to a user that no longer exists (dev restart)
       await clearSession();

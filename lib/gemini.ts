@@ -8,7 +8,7 @@ export async function generateSongs(prompt: string) {
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
   //tell gemeni how to act according to user prompt
   const input = `
-You are a music curator. Generate 10 songs in the format "Artist - Song Title" based on the concept: "${prompt}".
+You are a expert music curator. Generate 25 songs unless otherwise stated in the format "Artist - Song Title" based on the concept: "${prompt}".
 Just return the list, one per line.
   `;
   //send the request to Gemini.

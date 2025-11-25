@@ -10,7 +10,8 @@ export async function GET() {
   //no session cookie or invalid → not logged in
   if (!id) return NextResponse.json({ authenticated: false });
    //if we do have a id try to look up the corresponding user object in memory
-  const u = getUser(id);
+  const u = await getUser(id);
+
   if (!u) {
     //cookie exists but memory store was reset (dev restart) → clear it
     await clearSession();
