@@ -13,7 +13,7 @@ export default function Home() {
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<PlaylistItem[]>([]);
-  
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
@@ -22,14 +22,14 @@ export default function Home() {
       .then((userData) => {
         setUser(userData);
         if (userData && userData.authenticated) {
-           fetchHistory();
+          fetchHistory();
         }
       });
   }, []);
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch("/api/playlist/history"); 
+      const res = await fetch("/api/playlist/history");
       const data = await res.json();
       if (data.playlists) setHistory(data.playlists);
     } catch (e) {
@@ -54,18 +54,18 @@ export default function Home() {
         body: JSON.stringify({ concept }),
       });
       const data = await res.json();
-      
+
       if (data.ok) {
         setOutput(`Playlist created! Open in Spotify: ${data.playlist}`);
         const newPlaylist: PlaylistItem = {
-            id: Date.now().toString(),
-            name: concept.substring(0, 20) + "...", 
-            url: data.playlist 
+          id: Date.now().toString(),
+          name: concept.substring(0, 20) + "...",
+          url: data.playlist,
         };
-        setHistory(prev => [newPlaylist, ...prev]); 
-        
+        setHistory((prev) => [newPlaylist, ...prev]);
+
         //Open the sidebar automatically when a new item is added
-        setIsSidebarOpen(true); 
+        setIsSidebarOpen(true);
       } else {
         setOutput(`Error: ${data.error}`);
       }
@@ -78,9 +78,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen bg-blue-100 font-sans text-blue-900 overflow-hidden">
-      
-
-      <aside 
+      <aside
         className={`
           bg-blue-900 text-white flex flex-col shrink-0 
           transition-all duration-300 ease-in-out overflow-hidden
@@ -89,52 +87,76 @@ export default function Home() {
       >
         {/* Added min-w-[16rem] to inner div to prevent text squishing during animation */}
         <div className="w-64 flex flex-col h-full">
-            <div className="p-6 border-b border-blue-800 flex justify-between items-center">
-                <h2 className="text-xl font-bold whitespace-nowrap">Your History</h2>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                {history.length === 0 ? (
-                    <p className="text-blue-300 text-sm italic whitespace-nowrap">No playlists yet.</p>
-                ) : (
-                    history.map((item, index) => (
-                        <a 
-                            key={index} 
-                            href={item.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block p-3 rounded-lg bg-blue-800 hover:bg-blue-700 transition duration-200 text-sm whitespace-nowrap"
-                        >
-                            <div className="font-semibold truncate">{item.name}</div>
-                            <div className="text-blue-300 text-xs">Open Spotify ↗</div>
-                        </a>
-                    ))
-                )}
-            </div>
+          <div className="p-6 border-b border-blue-800 flex justify-between items-center">
+            <h2 className="text-xl font-bold whitespace-nowrap">
+              Your History
+            </h2>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {history.length === 0 ? (
+              <p className="text-blue-300 text-sm italic whitespace-nowrap">
+                No playlists yet.
+              </p>
+            ) : (
+              history.map((item, index) => (
+                <a
+                  key={index}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block p-3 rounded-lg bg-blue-800 hover:bg-blue-700 transition duration-200 text-sm whitespace-nowrap"
+                >
+                  <div className="font-semibold truncate">{item.name}</div>
+                  <div className="text-blue-300 text-xs">Open Spotify ↗</div>
+                </a>
+              ))
+            )}
+          </div>
         </div>
       </aside>
 
       {/* --- MAIN CONTENT --- */}
       <main className="flex-1 flex flex-col items-center justify-center p-4 relative">
-        
         {/*Toggle Button (Top Left of Main Area) */}
-        <button 
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="absolute top-4 left-4 text-blue-900 p-2 rounded-md hover:bg-blue-200 transition-colors"
-            title={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="absolute top-4 left-4 text-blue-900 p-2 rounded-md hover:bg-blue-200 transition-colors"
+          title={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
         >
-
-            {isSidebarOpen ? (
-                // 'X' Icon
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            ) : (
-                // Hamburger Menu Icon
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                </svg>
-            )}
+          {isSidebarOpen ? (
+            // 'X' Icon
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-8 h-8"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          ) : (
+            // Hamburger Menu Icon
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-8 h-8"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+              />
+            </svg>
+          )}
         </button>
 
         <h1 className="text-5xl md:text-6xl font-extrabold text-center mb-8 text-blue-950 font-sans">
@@ -181,6 +203,28 @@ export default function Home() {
               {output}
             </pre>
           )}
+        </div>
+
+        {/* Contact Us Button */}
+        <div className="mt-12 mb-4">
+          <a
+            href="mailto:atran53@lsu.edu?subject=Musicanator%20Support%20Issue"
+            className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {/* Mail Icon SVG */}
+            <svg
+              className="h-5 w-5 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+            </svg>
+            Having an issue? Contact us here!
+          </a>
         </div>
       </main>
     </div>
