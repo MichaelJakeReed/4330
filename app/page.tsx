@@ -14,8 +14,8 @@ export default function Home() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<PlaylistItem[]>([]);
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // On initial load: check authentication and fetch playlist history
   useEffect(() => {
@@ -49,7 +49,17 @@ export default function Home() {
 
   const connectSpotify = () => (window.location.href = "/api/spotify/login");
 
-  // Creates a new playlist using the user's text prompt
+  async function logout() {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+    } finally {
+      // whether it succeeds or not, send them to login
+      window.location.href = "/login";
+    }
+  }
+
   async function createPlaylist() {
     setLoading(true);
     try {
@@ -176,22 +186,32 @@ export default function Home() {
 
         <div className="w-full max-w-2xl bg-white dark:bg-blue-200 rounded-2xl shadow-2xl p-6 md:p-8">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-            <span className="text-lg font-semibold text-blue-900 mb-4 sm:mb-0">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <span className="text-lg font-semibold text-blue-900">
               Hello, {user.username}
             </span>
-            {!user.spotifyLinked ? (
+
+            <div className="flex items-center gap-3">
+              {!user.spotifyLinked ? (
+                <button
+                  onClick={connectSpotify}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition duration-200"
+                >
+                  Connect Spotify
+                </button>
+              ) : (
+                <span className="text-green-700 font-semibold">
+                  Spotify Connected
+                </span>
+              )}
+
               <button
-                onClick={connectSpotify}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition duration-200"
+                onClick={logout}
+                className="border border-red-500 text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg text-sm font-semibold transition duration-200"
               >
-                Connect Spotify
+                Log Out
               </button>
-            ) : (
-              <span className="text-green-700 font-semibold">
-                Spotify Connected
-              </span>
-            )}
+            </div>
           </div>
 
           <textarea
