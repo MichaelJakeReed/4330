@@ -1,9 +1,6 @@
 @import "tailwindcss";
 
-/*
-  We only keep your custom color variables.
-  We've removed the conflicting "*", "a", and "html, body" resets.
-*/
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

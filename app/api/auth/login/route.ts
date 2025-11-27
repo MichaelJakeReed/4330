@@ -11,8 +11,9 @@ export async function POST(req: Request) {
   if (!u || u.passHash !== hashPassword(password)) {
     return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
   }
+  //create a session cookie for this user
   await setSession(u.id);
-                         
+  //login successful
   return NextResponse.json({ ok: true });
 }
 

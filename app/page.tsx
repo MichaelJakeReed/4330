@@ -106,7 +106,6 @@ export default function Home() {
           ${isSidebarOpen ? "w-64 opacity-100" : "w-0 opacity-0"}
         `}
       >
-        {/* Added min-w-[16rem] to inner div to prevent text squishing during animation */}
         <div className="w-64 flex flex-col h-full">
           <div className="p-6 border-b border-blue-800 flex justify-between items-center">
             <h2 className="text-xl font-bold whitespace-nowrap">

@@ -32,13 +32,12 @@ export default function LoginPage() {
   }
 
   return (
-    // Updated: Background is now light blue for both light/dark modes
     // The main text color is dark blue for both light/dark modes
     <main className="flex items-center justify-center min-h-screen bg-blue-100 font-sans text-blue-900">
       
       <div className="w-full max-w-md p-4 md:p-8 m-4">
         
-        {/* Title: Changed from font-mono to font-sans for a rounded, professional look */}
+        {/* Title */}
         <h1 className="text-5xl md:text-6xl font-extrabold text-center mb-8 text-blue-950 font-sans">
           Musicanator
         </h1>

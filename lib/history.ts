@@ -1,6 +1,7 @@
 import { prisma } from "./prisma";
 import type { PlaylistHistory } from "@prisma/client";
 
+//saves a new playlist history entry to the database
 export async function savePlaylistHistory(
   userId: string,
   concept: string,
@@ -17,6 +18,7 @@ export async function savePlaylistHistory(
   });
 }
 
+//retrieves playlist history entries for a given user
 export async function getPlaylistHistory(
   userId: string
 ): Promise<PlaylistHistory[]> {
