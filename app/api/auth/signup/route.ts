@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   }
 
-  // 🔑 make sure to AWAIT this now that it hits the DB
+  //check if username is taken
   const existing = await findByUsername(username);
   if (existing) {
     return NextResponse.json({ error: "Username taken" }, { status: 409 });
